@@ -50,6 +50,7 @@ calcMostCommonTermCount = (tokens) ->
         unless @exists docSpec
             @collection.insert 
                 docId: Spomet._docId docSpec
+                text: docSpec.text
                 type: docSpec.type
                 base: docSpec.base
                 path: docSpec.path
