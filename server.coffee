@@ -79,11 +79,11 @@ Spomet.replace = (docSpec, refVersion) ->
         path: docSpec.path
     if refVersion?
         docSpecRem.version = refVersion
-        Spome.remove docSpecRem
+        Spomet.remove docSpecRem
     else
         docSpecRem.version = docSpec.version - 1
         Spomet.remove docSpecRem
-    docSpec
+    {added: docSpec, removed: docSpecRem}
 
 
 removeTokens = (indexTokens) ->
@@ -97,12 +97,14 @@ removeTokens = (indexTokens) ->
                
 Spomet.remove = (docSpec) ->
     cleanupSearches()
-    documents = Spomet.Documents.query docSpec
+    documents = Spomet.Documents.find docSpec
     
     documents.forEach (e) ->
         removeTokens(e.indexTokens).forEach (rToken) ->
             Spomet.Index.remove e.docId, rToken.indexName, rToken.token
         Spomet.Documents.collection.remove {_id: e._id}
+    
+    documents
 
 
 Spomet.reset = () ->

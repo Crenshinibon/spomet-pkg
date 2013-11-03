@@ -2,14 +2,25 @@ Deps.autorun () ->
     Meteor.subscribe 'documents'
     Meteor.subscribe 'common-terms'
 
-Spomet.add = (docSpec) ->
-    Meteor.call 'spometAdd', docSpec, () ->
+Spomet.add = (docSpec, resultCb) ->
+    Meteor.call 'spometAdd', docSpec, (error, result) ->
+        if result?
+            resultCb? result
     
-Spomet.replace = (docSpec, refVersion) ->
-    Meteor.call 'spometReplace', docSpec, refVersion, () ->
+Spomet.replace = (docSpec, refVersion, resultCb) ->
+    if refVersion? and isNaN refVersion
+         resultCb = refVersion
+         refVersion = null
     
-Spomet.remove = (docSpec) ->
-    Meteor.call 'spometRemove', docSpec, () ->
+    Meteor.call 'spometReplace', docSpec, refVersion, (error, result) ->
+        if result?
+            resultCb? result
+        
+    
+Spomet.remove = (docSpec, resultCb) ->
+    Meteor.call 'spometRemove', docSpec, (error, result) ->
+        if result?
+            resultCb? result
 
 class Spomet.Search
     

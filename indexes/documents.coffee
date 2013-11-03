@@ -32,14 +32,15 @@ calcMostCommonTermCount = (tokens) ->
                     
             res = cur.fetch()
             if res.length is 1
-                res.version + 1
+                res[0].version + 1
             else
                 1
     
     get: (docId) ->
         @collection.findOne({docId: docId})
     
-    query: (docSpec) ->
+    find: (docSpec) ->
+        unless docSpec? then docSpec = {}
         results = []
         if docSpec?
             results = Spomet.Documents.collection.find(docSpec).fetch()
