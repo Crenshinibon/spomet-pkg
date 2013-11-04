@@ -1,5 +1,4 @@
 Deps.autorun () ->
-    Meteor.subscribe 'documents'
     Meteor.subscribe 'common-terms'
 
 Spomet.add = (docSpec, resultCb) ->
@@ -136,7 +135,7 @@ class Spomet.Search
         search = Spomet.Searches.find {phraseHash: phraseHash} 
         if search.count() is 0
             
-            docs = {}
+            docIds = []
             seen = {}
             
             words = phrase.split ' '
@@ -144,23 +143,20 @@ class Spomet.Search
             
             cursor.forEach (e) ->
                 e.documents.forEach (d) ->
-                    doc = docs[d.docId]
-                    unless doc?
-                        doc = Spomet.Documents.get d.docId
-                        docs[d.docId] = doc
-                        
-                    unless seen[doc.base]?
-                        seen[doc.base] = true
+                    [type, base, path, version] = Spomet._splitDocId d.docId
+                    
+                    unless seen[base]?
+                        seen[base] = true
                         res = 
                             phraseHash: phraseHash 
                             score: 0
-                            type: doc.type
-                            base: doc.base
-                            version: doc.version
+                            type: type
+                            base: base
                             subDocs: {}
                             queried: new Date()
                             interim: true
                         Spomet.Searches.insert res
+                    
             
     results: () =>
         phrase = @getCurrentPhrase()

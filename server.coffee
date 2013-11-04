@@ -3,7 +3,6 @@ createSearchDoc = (phraseHash, doc) ->
         phraseHash: phraseHash
         base: doc.base
         type: doc.type
-        version: doc.version
     
     if current?
         current
@@ -13,7 +12,6 @@ createSearchDoc = (phraseHash, doc) ->
             score: 0
             type: doc.type
             base: doc.base
-            version: doc.version
             subDocs: {}
             queried: new Date()
             interim: false
@@ -23,8 +21,10 @@ createSearchDoc = (phraseHash, doc) ->
 updateSearchDoc = (current, phraseHash, doc, hits, score) ->
     subDocs = current.subDocs
     
-    subDocs[doc.path] =
+    sdKey = doc.path + '-' + doc.version
+    subDocs[sdKey] =
         docId: doc.docId
+        version: doc.version
         path: doc.path
         hits: hits
         score: score
@@ -127,18 +127,9 @@ Meteor.methods
     
     spometReplace: (docSpec, refVersion) ->
         Spomet.replace docSpec, refVersion
-        
-Meteor.publish 'documents', () ->
-    Spomet.Documents.collection.find {},
-        fields:
-            _id: 1
-            docId: 1
-            'type': 1
-            'base': 1
-            'path': 1
-            'version': 1
 
-#should be extended
+
+#should be extended or placed somewhere else
 stopWords = ['there','not','this','that','them','then','and','the','any','all','other','und','ich','wir','sie','als']
 Meteor.publish 'common-terms', () ->
     Spomet.CommonTerms.find {tlength: {$gt: 2}, token: {$nin: stopWords}},

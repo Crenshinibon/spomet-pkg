@@ -19,7 +19,23 @@ Spomet._docId = (docSpec) ->
     unless docSpec.type? then docSpec.type = 'default'
     unless docSpec.path? then docSpec.path = '/'
     
-    docSpec.type + '-' + docSpec.base + '-' + docSpec.path + '-' + docSpec.version
+    escapeHyphen = (string) ->
+        string.replace /-/g , '&#45;'
+    
+    escapeHyphen(docSpec.type) + '-' + 
+    escapeHyphen(docSpec.base) + '-' + 
+    escapeHyphen(docSpec.path) + '-' + docSpec.version
+    
+Spomet._splitDocId = (docId) ->
+    [type, base, path, version] = docId.split '-'
+    
+    unescapeHyphen = (string) ->
+        string.replace /&#45/g, '-'
+        
+    [unescapeHyphen(type), 
+    unescapeHyphen(base), 
+    unescapeHyphen(path),
+    version]
     
 Spomet.buildSearchQuery = (options) ->
     phraseHash = CryptoJS.MD5(options.phrase).toString()
