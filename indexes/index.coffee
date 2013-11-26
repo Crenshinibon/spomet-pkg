@@ -136,5 +136,5 @@ Index.find = (phrase, callback, indexes) ->
 
 Spomet.Index = @Index
 
-Meteor.startup = () ->
+Meteor.startup () ->
     Index.setup()
