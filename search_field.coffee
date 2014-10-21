@@ -1,14 +1,15 @@
 Spomet.defaultSearch = new Spomet.Search
 
-Template.spometSearch.latestPhrase = () ->
-    phrase = Spomet.defaultSearch.getCurrentPhrase()
-    if phrase? then phrase else ''
+Template.spometSearch.helpers
+    latestPhrase: () ->
+        phrase = Spomet.defaultSearch.getCurrentPhrase()
+        if phrase? then phrase else ''
 
-Template.spometSearch.searchInProgress = () ->
-    Spomet.defaultSearch.isSearching()?
+    searchInProgress: () ->
+        Spomet.defaultSearch.isSearching()?
 
-Template.spometSearch.searching = () ->
-    Spomet.defaultSearch.getCurrentPhrase()?
+    searching: () ->
+        Spomet.defaultSearch.getCurrentPhrase()?
 
 typeaheadSource = (query) ->
     [start..., last] = @query.split ' '

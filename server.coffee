@@ -128,6 +128,9 @@ Meteor.methods
     spometReplace: (docSpec, refVersion) ->
         Spomet.replace docSpec, refVersion
 
+    spometReset: () ->
+        Spomet.reset()
+
 
 #should be extended or placed somewhere else
 stopWords = ['there','not','this','that','them','then','and','the','any','all','other','und','ich','wir','sie','als']

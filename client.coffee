@@ -135,7 +135,6 @@ class Spomet.Search
         search = Spomet.Searches.find {phraseHash: phraseHash} 
         if search.count() is 0
             
-            docIds = []
             seen = {}
             
             words = phrase.split ' '

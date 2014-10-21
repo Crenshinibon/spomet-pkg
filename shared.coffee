@@ -3,6 +3,15 @@ Spomet = {}
 Spomet.Searches = new Meteor.Collection 'spomet-search'
 Spomet.CommonTerms = new Meteor.Collection 'spomet-fullword'
 
+if Meteor.isServer
+    Spomet.Searches.allow
+        insert: () ->
+            true
+        update: () ->
+            false
+        remove: () ->
+            false
+
 Spomet.options =
     indexes: []
     resultsCount: 20
@@ -38,7 +47,7 @@ Spomet._splitDocId = (docId) ->
     version]
     
 Spomet.buildSearchQuery = (options) ->
-    phraseHash = CryptoJS.MD5(options.phrase).toString()
+    phraseHash = Spomet.phraseHash options.phrase
     selector = {phraseHash: phraseHash}
     
     if options.excludes?
