@@ -41,13 +41,15 @@ findWithTokenizer = (tokenizer, callback) ->
 rate = (docId, tokenCounts) ->
     score = 0
     para = Documents.ratingParams docId
-    (_.values tokenCounts).forEach (data) ->
-        score += data.indexBoost * tfidf data.tokenCountInDoc, 
-            para.dlength, 
-            para.mostCommonTermCount, 
-            para.documentsCount, 
-            data.documentsCountWithToken,
-            data.indexBoost
+    if para?
+        _.values(tokenCounts).forEach (data) ->
+            score += data.indexBoost * tfidf data.tokenCountInDoc, 
+                para.dlength, 
+                para.mostCommonTermCount, 
+                para.documentsCount, 
+                data.documentsCountWithToken,
+                data.indexBoost
+    
     score
 
 
