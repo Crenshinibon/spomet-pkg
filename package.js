@@ -4,6 +4,7 @@ Package.describe({
 
 Package.on_use(function (api) {
    api.use('standard-app-packages', ['client', 'server']);
+   api.use('underscore', ['client', 'server']);
    api.use('coffeescript',['client','server']);
    
    api.add_files('md5.js', ['client','server']);

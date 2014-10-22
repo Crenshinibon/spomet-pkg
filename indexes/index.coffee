@@ -55,24 +55,27 @@ Index.add = (docSpec) ->
     if docSpec.base? and docSpec.text?
         unless docSpec.type? then docSpec.type = 'default'
         unless docSpec.path? then docSpec.path = '/'
-        docSpec.version = Documents.nextVersion docSpec
         
-        #init indexer for each index
-        tokenizers = Spomet.options.indexes.map (i) ->
-            new i.Tokenizer
-        
-        #normalize and tokenize over all indexes in one go
-        docSpec.text.split('').forEach (c, pos) ->
-            tokenizers.forEach (t) ->
-                t.parseCharacter c, pos
-    
-        docId = Spomet._docId docSpec
-        tokenizers.forEach (t) ->
-            t.finalize()
-            indexTokens docId, t.tokens, t.collection
-        
-        Documents.add docSpec, tokenizers.map((i) -> i.tokens).reduce (s, a) -> s.concat a
-    
+        Meteor.setTimeout () ->
+                console.log 'async executing adding to index'
+                docSpec.version = Documents.nextVersion docSpec
+                
+                #init indexer for each index
+                tokenizers = Spomet.options.indexes.map (i) ->
+                    new i.Tokenizer
+                
+                #normalize and tokenize over all indexes in one go
+                docSpec.text.split('').forEach (c, pos) ->
+                    tokenizers.forEach (t) ->
+                        t.parseCharacter c, pos
+            
+                docId = Spomet._docId docSpec
+                tokenizers.forEach (t) ->
+                    t.finalize()
+                    indexTokens docId, t.tokens, t.collection
+                
+                Documents.add docSpec, tokenizers.map((i) -> i.tokens).reduce (s, a) -> s.concat a
+            , 0
     docSpec
     
     
@@ -89,8 +92,9 @@ Index.setup = () ->
         index.collection._ensureIndex {token: 1}
     
 Index.remove = (docId, indexName, remToken) ->
-    ind = i for i in Spomet.options.indexes when i.name is indexName
-    ind.collection.update {token: remToken},
+    ind = _.find Spomet.options.indexes (i) ->
+        i.name is indexName
+    ind?.collection.update {token: remToken},
         $pull: {documents: {docId: docId}}
         $inc: {documentsCount: -1}
             
@@ -137,4 +141,5 @@ Index.find = (phrase, callback, indexes) ->
 Spomet.Index = @Index
 
 Meteor.startup () ->
+    Index.fut = Npm.require "fibers/future"
     Index.setup()
